@@ -49,6 +49,37 @@ function updateTableVisibility() {
   if (tc) tc.style.display = show ? "" : "none";
   toggleBgHint?.(); // keep your background hint in sync
 }
+// --- Add this helper once (top-level is fine) ---
+function sortRowsByVendor(rows) {
+ const arr = Array.isArray(rows) ? rows.slice() : [];
+
+  // helpers keep logic tidy + consistent
+  const vKey = (r) =>
+    String(r?.vendor ?? "")
+      .trim()
+      .toLocaleLowerCase(); // case-insensitive vendor sort
+
+  const skuKey = (r) =>
+    String(r?.sku ?? "")
+      .trim();
+
+  return arr.sort((a, b) => {
+    const av = vKey(a);
+    const bv = vKey(b);
+
+    // 1) Vendor A→Z (empty vendors go last)
+    if (av && !bv) return -1;
+    if (!av && bv) return 1;
+    if (av !== bv) return av.localeCompare(bv, undefined, { sensitivity: "base" });
+
+    // 2) SKU A→Z with numeric awareness (e.g., ABC2 < ABC10)
+    const as = skuKey(a);
+    const bs = skuKey(b);
+    if (as && !bs) return -1;
+    if (!as && bs) return 1;
+    return as.localeCompare(bs, undefined, { numeric: true, sensitivity: "base" });
+  });
+}
 
 function isFresh(savedAt){
   try { return (Date.now() - Number(savedAt || 0)) < PRODUCT_CACHE_TTL_MS; }
@@ -784,18 +815,23 @@ function renderVirtualTableInit() {
 wireDescriptionSheet();
 }
 
+// --- Replace your existing renderTableAllVirtual with this version ---
 function renderTableAllVirtual(rows) {
   // Hide legacy table path (we only use the virtual viewport)
   try {
     const tc = document.getElementById("table-container");
     if (tc) tc.style.display = "none";
   } catch {}
+
   const vp = document.getElementById("table-viewport");
   if (vp) vp.style.display = "";
 
-  window.FILTERED_ROWS = Array.isArray(rows) ? rows : [];
+  // ✅ Always sort by vendor before rendering
+  window.FILTERED_ROWS = sortRowsByVendor(rows);
+
   renderVirtualTableInit();
 }
+
 
 // Compatibility shim if something calls this
 function initVirtualTable() {
@@ -1423,7 +1459,41 @@ function categorizeDescription(desc = "") {
   }
   return "Misc";
 }
+(function installVendorSortWrapper() {
+  if (window.__vendorSortWrapped) return; // prevent double-wrap
+  const wrap = () => {
+    const fn = window.renderVirtualTableInit;
+    if (typeof fn !== "function") return false;
 
+    const original = fn;
+    window.renderVirtualTableInit = function () {
+      if (Array.isArray(window.FILTERED_ROWS)) {
+        window.FILTERED_ROWS = sortRowsByVendor(window.FILTERED_ROWS);
+      }
+      return original.apply(this, arguments);
+    };
+    window.__vendorSortWrapped = true;
+    return true;
+  };
+
+  // Try immediately, then on DOM ready, then a short retry window
+  if (wrap()) return;
+
+  const onReady = () => { wrap(); };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", onReady, { once: true });
+  } else {
+    onReady();
+  }
+
+  // Final fallback: try a few times in case scripts load late/deferred
+  let tries = 0;
+  const maxTries = 20;       // ~2s total
+  const timer = setInterval(() => {
+    if (window.__vendorSortWrapped) { clearInterval(timer); return; }
+    if (wrap() || ++tries >= maxTries) clearInterval(timer);
+  }, 100);
+})();
 async function resolveSheetTitle(spreadsheetId, gidNumber) {
   if (_pageTitle) return _pageTitle;
   if (typeof getSheetTitleByGid === 'function') {
