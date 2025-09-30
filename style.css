@@ -1301,3 +1301,43 @@ body.no-scroll { overflow: hidden; }
     padding: 8px 4px;
   }
 }
+#table-viewport .vhead {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: linear-gradient(180deg, #fafafa, #f0f0f0);
+  border-bottom: 2px solid var(--border);
+  font-weight: 600;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  color: #111;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+#table-viewport .vhead > div {
+  border-right: 1px solid #eaeaea;
+  padding: 6px 8px;
+}
+#table-viewport .vhead > div:last-child {
+  border-right: none;
+}
+#table-viewport .vrow:nth-child(odd) {
+  background: #fff;
+}
+#table-viewport .vrow:nth-child(even) {
+  background: #fafafa;
+}
+#table-viewport .vhead > div.sort-active {
+  color: var(--brand);
+  border-bottom: 2px solid var(--brand);
+}
+@media (max-width: 430px) {
+  #table-viewport .vhead {
+    font-size: 0.8rem;
+    padding: 6px;
+  }
+  #table-viewport .vhead > div {
+    padding: 4px;
+  }
+}
