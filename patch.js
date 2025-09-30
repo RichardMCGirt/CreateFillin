@@ -156,7 +156,6 @@
         }
       }
 
-      const { options: branchOpts } = await svc.fetchBranchOptions();
       const branchSel = document.getElementById("branchSelect");
       if (branchSel) {
         for (const opt of branchOpts) {
@@ -177,8 +176,6 @@
       }
     } catch (e) {
       console.error("Error initializing dropdowns:", e);
-      const banner = document.getElementById("airtableBanner");
-      if (banner) banner.style.display = "block";
     }
   })();
 

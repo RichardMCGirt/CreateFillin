@@ -797,10 +797,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function bootAirtable(){
   try {
     const svc = new window.AirtableService();
-    await initDropdowns(svc);         // populate Branch / FM / NeededBy / Reason
+    await initDropdowns(svc);       
     wireSaveButton(svc);
   } catch (e) {
-    // non-fatal
+    
     console.warn("Dropdown init failed", e);
   }
 }

@@ -208,6 +208,162 @@
     setReasonOptions();
   }
 })();
+
+(function(){
+  "use strict";
+  var IDS = {
+    branch: "branchSelect",
+    fm:     "fieldManagerSelect"
+  };
+
+  var KEYS = {
+    branchId:   "vanir_branch_id",
+    branchLbl:  "vanir_branch_label",
+    fmId:       "vanir_field_manager_id",
+    fmLbl:      "vanir_field_manager_label"
+  };
+
+  // --- Tiny utils ---
+  function $(id){ return document.getElementById(id); }
+  function nonEmpty(s){ return typeof s === "string" && s.trim() !== ""; }
+  function trySet(key, val){ try { localStorage.setItem(key, String(val ?? "")); } catch(e){} }
+  function tryGet(key){ try { return localStorage.getItem(key) || ""; } catch(e){ return ""; } }
+
+  // Ensure an option exists; if not, append one (for fallback by label/ID)
+  function ensureOption(selectEl, value, label){
+    if (!selectEl || !nonEmpty(String(value))) return;
+    var exists = Array.prototype.some.call(selectEl.options, function(o){ return o.value === String(value); });
+    if (!exists) {
+      var opt = document.createElement("option");
+      opt.value = String(value);
+      opt.textContent = nonEmpty(label) ? String(label) : String(value);
+      opt.dataset.restored = "true";
+      selectEl.appendChild(opt);
+    }
+    selectEl.value = String(value);
+  }
+
+  // Try to select by value (ID) OR by matching label case-insensitively
+  function selectByIdOrLabel(selectEl, savedId, savedLabel){
+    if (!selectEl) return false;
+
+    // 1) Try by exact value (record ID)
+    if (nonEmpty(savedId)) {
+      selectEl.value = savedId;
+      if (selectEl.value === savedId) return true;
+    }
+
+    // 2) Try by label (case-insensitive)
+    if (nonEmpty(savedLabel)) {
+      var want = savedLabel.trim().toLowerCase();
+      for (var i=0; i<selectEl.options.length; i++){
+        var o = selectEl.options[i];
+        if ((o.textContent || "").trim().toLowerCase() === want) {
+          selectEl.value = o.value;
+          return true;
+        }
+      }
+      // 3) If still not found, create a fallback option using the label
+      ensureOption(selectEl, savedId || savedLabel, savedLabel);
+      return true;
+    }
+
+    return false;
+  }
+
+  // Wait until a select has options (beyond a placeholder) before restoring.
+  // Uses MutationObserver + a short timeout guard.
+  function whenOptionsReady(selectEl, callback){
+    if (!selectEl) return;
+
+    var readyNow = selectEl.options && selectEl.options.length > 1;
+    if (readyNow) { callback(); return; }
+
+    var done = false;
+    var observer = new MutationObserver(function(){
+      if (done) return;
+      var ok = selectEl.options && selectEl.options.length > 1;
+      if (ok) {
+        done = true;
+        try { observer.disconnect(); } catch(e){}
+        callback();
+      }
+    });
+    try { observer.observe(selectEl, { childList:true, subtree:false }); } catch(e){}
+
+    // Safety: also try again after a short delay in case options are injected programmatically
+    setTimeout(function(){
+      if (done) return;
+      var ok = selectEl.options && selectEl.options.length > 1;
+      if (ok) {
+        done = true;
+        try { observer.disconnect(); } catch(e){}
+        callback();
+      }
+    }, 2000);
+  }
+
+  // Save handlers
+  function saveBranch(){
+    var sel = $(IDS.branch);
+    if (!sel) return;
+    var val = sel.value || "";
+    var lbl = (sel.selectedOptions && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : "") || "";
+    trySet(KEYS.branchId,  val);
+    trySet(KEYS.branchLbl, lbl);
+  }
+  function saveFieldManager(){
+    var sel = $(IDS.fm);
+    if (!sel) return;
+    var val = sel.value || "";
+    var lbl = (sel.selectedOptions && sel.selectedOptions[0] ? sel.selectedOptions[0].textContent : "") || "";
+    trySet(KEYS.fmId,  val);
+    trySet(KEYS.fmLbl, lbl);
+  }
+
+  // Restore routine (runs once options are present)
+  function restoreBranch(){
+    var sel = $(IDS.branch);
+    if (!sel) return;
+    var id  = tryGet(KEYS.branchId);
+    var lbl = tryGet(KEYS.branchLbl);
+    selectByIdOrLabel(sel, id, lbl);
+  }
+  function restoreFieldManager(){
+    var sel = $(IDS.fm);
+    if (!sel) return;
+    var id  = tryGet(KEYS.fmId);
+    var lbl = tryGet(KEYS.fmLbl);
+    selectByIdOrLabel(sel, id, lbl);
+  }
+
+  // Wire up on DOM ready
+  function init(){
+    var branchSel = $(IDS.branch);
+    var fmSel     = $(IDS.fm);
+
+    // Restore AFTER options have loaded
+    if (branchSel) whenOptionsReady(branchSel, restoreBranch);
+    if (fmSel)     whenOptionsReady(fmSel,     restoreFieldManager);
+
+    // Save on change
+    if (branchSel) branchSel.addEventListener("change", saveBranch, { passive:true });
+    if (fmSel)     fmSel.addEventListener("change",     saveFieldManager, { passive:true });
+
+    // Also do a last-chance restore a bit later (covers late async fills)
+    setTimeout(function(){
+      try { restoreBranch(); } catch(e){}
+      try { restoreFieldManager(); } catch(e){}
+    }, 3000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
 </script>
 
 </body>
