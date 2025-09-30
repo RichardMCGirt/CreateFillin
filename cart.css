@@ -1,34 +1,286 @@
- :root { --page-max: 980px; }
-    body { margin: 0 auto; max-width: var(--page-max); padding: 12px; }
-    header.cart-header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin:8px 0 12px; }
-    .cart-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .muted-sm { color: var(--muted); font-size: .9rem; }
-    .stack { display:flex; flex-direction:column; gap:6px; }
-    .field-label { font-size: .8rem; color: var(--muted); }
-    .cart-note { margin: 8px 0 14px; }
-    .sep { height: 1px; background: var(--border); margin: 12px 0; }
+/* =========================
+   Cart Page — Cleaned & Professional
+   - Consistent spacing & typography
+   - Accessible contrast-friendly defaults
+   - Mobile-first with subtle polish
+   ========================= */
 
-    .sticky-actions { position: sticky; bottom: 0; display:flex; justify-content:flex-end; gap:10px; padding:10px 12px; background: var(--card, #fff); border-top: 1px solid rgba(0,0,0,.08); box-shadow: 0 -6px 16px rgba(0,0,0,.06); z-index: 40; }
-    .full-width-mobile { width: auto; }
-    @media (max-width: 640px) { .full-width-mobile { width: 100%; } body { padding-bottom: calc(12px + env(safe-area-inset-bottom)); } }
+:root {
+  --page-max: 980px;
 
-    #cart-table { width: 100%; border-collapse: collapse; }
-    #cart-table th, #cart-table td { vertical-align: middle; }
+  /* Theme tokens */
+  --bg: #f7f7f9;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
 
-    #fillin-section.card { padding: 12px; border: 1px solid rgba(0,0,0,.08); border-radius: 12px; background: var(--card, #fff); margin-bottom: 12px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    @media (max-width: 780px) { .grid { grid-template-columns: 1fr; } }
-    .field { display: flex; flex-direction: column; gap: 6px; }
-    .field input[type="text"], .field input[type="date"], .field select, .field textarea, .field input[type="number"] { padding: 10px; border: 1px solid var(--border, #ddd); border-radius: 10px; font-size: 14px; width: 100%; box-sizing: border-box; background: var(--card, #fff); color: inherit; }
-    .field textarea { min-height: 80px; resize: vertical; }
-    .right { display:flex; justify-content:flex-end; gap:10px; align-items:center; }
-    .pill { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; font-size:12px; background:rgba(0,0,0,.04); }
-    #airtableBanner { display:none; margin-bottom:10px; padding:10px; border-radius:8px; background:#fff2cc; border:1px solid #ffe58f; color:#7a5a00; }
+  /* UI tokens */
+  --radius: 12px;
+  --radius-lg: 999px;
+  --shadow-up: 0 -6px 16px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 1px rgba(0, 0, 0, 0.04);
 
-    /* Totals layout */
-    #totals { display:grid; grid-template-columns: 1fr auto; gap:8px 16px; align-items:center; }
-    #totals .label { justify-self:end; font-weight: 500; }
-    #totals .value { justify-self:end; }
-    #totals .grand { font-size: 1.1rem; font-weight: 700; }
-    #globalMarginWrap { display:flex; justify-content:flex-end; margin: 8px 0 12px; }
-    #globalMarginWrap .field { max-width: 200px; }
+  /* Spacing scale (px) */
+  --s-2: 4px;
+  --s-3: 6px;
+  --s-4: 8px;
+  --s-5: 10px;
+  --s-6: 12px;
+  --s-7: 14px;
+  --s-8: 16px;
+  --s-10: 20px;
+}
+
+/* Page shell */
+body {
+  margin: 0 auto;
+  max-width: var(--page-max);
+  padding: var(--s-6);
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.4;
+}
+
+/* Header & utility */
+header.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-6);
+  margin: var(--s-4) 0 var(--s-6);
+}
+
+.cart-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  flex-wrap: wrap;
+}
+
+.muted-sm {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.field-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.cart-note {
+  margin: var(--s-4) 0 var(--s-7);
+}
+
+/* Subtle separator */
+.sep {
+  height: 1px;
+  background: var(--border);
+  margin: var(--s-6) 0;
+  border: 0;
+}
+
+/* Sticky footer actions */
+.sticky-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-5);
+  padding: var(--s-5) var(--s-6);
+  background: var(--card);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-up);
+}
+
+/* Mobile width helpers */
+.full-width-mobile {
+  width: auto;
+}
+
+/* Table */
+#cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden; /* keeps rounded corners on table */
+  box-shadow: var(--shadow-sm);
+}
+
+#cart-table th,
+#cart-table td {
+  vertical-align: middle;
+  padding: var(--s-6) var(--s-6);
+}
+
+#cart-table th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--muted);
+  background: #fafafa;
+  border-bottom: 1px solid var(--border);
+}
+
+#cart-table tr + tr td {
+  border-top: 1px solid var(--border);
+}
+
+/* Card section (Fill-in) */
+#fillin-section.card {
+  margin-bottom: var(--s-6);
+  padding: var(--s-6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Form grid */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-5);
+}
+
+/* Form field styles */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.field input[type="text"],
+.field input[type="date"],
+.field input[type="number"],
+.field select,
+.field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--s-5);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--card);
+  color: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: #9ca3af;
+  box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.25);
+}
+
+/* Right-aligned row helper */
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--s-5);
+}
+
+/* Pill */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  border-radius: var(--radius-lg);
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.04);
+  color: #374151;
+}
+
+/* Airtable banner */
+#airtableBanner {
+  display: none;
+  margin-bottom: var(--s-5);
+  padding: var(--s-5);
+  border: 1px solid #ffe58f;
+  border-radius: 8px;
+  background: #fff2cc;
+  color: #7a5a00;
+}
+
+/* Totals */
+#totals {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--s-4) var(--s-8);
+}
+
+#totals .label {
+  justify-self: end;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+#totals .value {
+  justify-self: end;
+}
+
+#totals .grand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* Global margin wrapper (align right) */
+#globalMarginWrap {
+  display: flex;
+  justify-content: flex-end;
+  margin: var(--s-4) 0 var(--s-6);
+}
+
+#globalMarginWrap .field {
+  max-width: 200px;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 780px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    padding-bottom: calc(var(--s-6) + env(safe-area-inset-bottom));
+  }
+
+  .full-width-mobile {
+    width: 100%;
+  }
+
+  header.cart-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--s-4);
+  }
+
+  #cart-table th,
+  #cart-table td {
+    padding: var(--s-5);
+  }
+}

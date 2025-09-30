@@ -1,0 +1,205 @@
+
+/* ==========================================================================
+   Vanir – Alternate Theme Overlay (Teal + Coral)
+   Apply AFTER style2.cleaned.css to recolor without layout changes.
+   ========================================================================== */
+:root {
+  /* Base */
+  --bg:            #fcfcfd;  /* near-white */
+  --surface:       #ffffff;
+  --surface-2:     #f6f7f9;
+  --text:          #0b1324;  /* deep navy */
+  --text-muted:    #5b6475;
+
+  /* Brand (distinct) */
+  --primary:       #0d9488;  /* teal-600 */
+  --primary-700:   #0f766e;
+  --primary-800:   #115e59;
+  --primary-50:    #ecfdf5;
+
+  /* Accents */
+  --accent:        #fb7185;  /* coral-500 */
+  --warning:       #f59e0b;  /* amber-500 */
+  --danger:        #ef4444;  /* red-500 */
+
+  /* Lines / Rings / Shadows */
+  --border:        #e6e8ee;
+  --border-strong: #cfd5e1;
+  --ring:          #2dd4bf;  /* teal-400 */
+  --shadow:        0 1px 2px rgba(11,19,36,0.04), 0 8px 24px rgba(11,19,36,0.08);
+
+  /* Tables */
+  --th-bg:         #f7faf9;  /* faint teal cast */
+  --th-text:       #0b1324;
+  --tr-alt:        #f9fbfb;
+
+  /* Buttons */
+  --btn-text:      #0b1324;
+  --btn-bg:        #eef2f5;
+  --btn-bg-hover:  #e7edf2;
+
+  /* Inputs */
+  --input-bg:      #ffffff;
+  --input-text:    #0b1324;
+  --input-ph:      #798399;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:            #0a0f1a;
+    --surface:       #0f172a;
+    --surface-2:     #111827;
+    --text:          #e6eaf2;
+    --text-muted:    #aab4c6;
+
+    --primary:       #34d399;  /* teal-400 */
+    --primary-700:   #2dd4bf;
+    --primary-800:   #14b8a6;
+    --primary-50:    #0a0f1a;
+
+    --accent:        #fb8a9a;
+    --warning:       #fbbf24;
+    --danger:        #f87171;
+
+    --border:        #1f2838;
+    --border-strong: #283345;
+    --ring:          #2dd4bf;
+    --shadow:        0 1px 2px rgba(0,0,0,0.25), 0 6px 24px rgba(0,0,0,0.35);
+
+    --th-bg:         #101a26;
+    --th-text:       #e6eaf2;
+    --tr-alt:        #0d1622;
+
+    --btn-text:      #e6eaf2;
+    --btn-bg:        #192235;
+    --btn-bg-hover:  #1f2a41;
+
+    --input-bg:      #0f172a;
+    --input-text:    #e6eaf2;
+    --input-ph:      #aab4c6;
+  }
+}
+
+/* Base surfaces */
+html, body { background: var(--bg) !important; color: var(--text) !important; }
+body, .card, .panel, .sheet, .modal, .drawer, .dropdown, .menu, .chip, .tag {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+hr, .divider { border: 0; border-top: 1px solid var(--border); }
+
+/* Links */
+a { color: var(--primary); text-decoration-color: color-mix(in srgb, var(--primary) 40%, transparent); }
+a:hover { color: var(--primary-700); }
+a:active { color: var(--primary-800); }
+
+/* Buttons */
+.btn {
+  color: var(--btn-text);
+  background: var(--btn-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  padding: 8px 12px;
+  line-height: 1.2;
+  box-shadow: var(--shadow);
+  transition: background .15s ease, border-color .15s ease, transform .02s ease-in-out;
+}
+.btn:hover { background: var(--btn-bg-hover); }
+.btn:active { transform: translateY(0.5px); }
+.btn:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--ring); }
+
+.btn.primary {
+  background: var(--primary);
+  color: #fff;
+  border-color: color-mix(in srgb, var(--primary) 70%, #000 0%);
+}
+.btn.primary:hover { background: var(--primary-700); }
+.btn.primary:active { background: var(--primary-800); }
+
+.btn.success { background: var(--accent); color: #3b0b15; border-color: transparent; }
+.btn.warning { background: var(--warning); color: #231803; border-color: transparent; }
+.btn.danger  { background: var(--danger);  color: #fff; border-color: transparent; }
+
+.btn.ghost { background: transparent; border-color: var(--border); color: var(--text-muted); }
+.btn.ghost:hover { background: var(--surface-2); color: var(--text); }
+
+/* Inputs */
+input[type="text"],
+input[type="number"],
+input[type="search"],
+input[type="email"],
+input[type="datetime-local"],
+select, textarea {
+  background: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 10px !important;
+  outline: none !important;
+  box-shadow: none;
+}
+input::placeholder, textarea::placeholder { color: var(--input-ph); }
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  box-shadow: 0 0 0 3px var(--ring);
+  border-color: var(--primary);
+}
+
+/* Tables */
+table { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+thead th { background: var(--th-bg) !important; color: var(--th-text) !important; border-bottom: 1px solid var(--border-strong); }
+tbody tr { border-bottom: 1px solid var(--border); }
+tbody tr:nth-child(even) { background: var(--tr-alt); }
+tbody tr:hover { background: color-mix(in srgb, var(--primary) 6%, var(--surface)); }
+td, th { border-right: 1px solid var(--border); }
+td:last-child, th:last-child { border-right: 0; }
+
+#table-viewport .vhead { background: var(--th-bg); color: var(--th-text); border-bottom: 1px solid var(--border-strong); box-shadow: 0 1px 0 var(--border); }
+#table-viewport .vrow  { border-bottom: 1px solid var(--border); }
+#table-viewport .vrow:hover { background: color-mix(in srgb, var(--primary) 6%, var(--surface)); }
+
+/* Chips / Tags */
+.tag, .chip, .badge {
+  background: var(--primary-50);
+  color: var(--primary-800);
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
+  border-radius: 999px;
+  padding: 2px 8px;
+  line-height: 1.4;
+}
+
+/* Alerts */
+.alert { border: 1px solid var(--border-strong); background: var(--surface); color: var(--text); box-shadow: var(--shadow); border-left: 4px solid var(--primary); }
+.alert.success { border-left-color: var(--accent); }
+.alert.warning { border-left-color: var(--warning); }
+.alert.danger  { border-left-color: var(--danger); }
+
+/* Modals */
+.modal, #desc-sheet {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(11,19,36, 0.35);
+}
+.modal-backdrop, #desc-sheet-backdrop, .overlay {
+  background: rgba(11,19,36, 0.55);
+  backdrop-filter: saturate(120%) blur(2px);
+}
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); }
+
+/* Focus utility */
+:where(button, [role="button"], a, input, select, textarea):focus-visible {
+  outline: 0; box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* Utilities */
+.muted { color: var(--text-muted) !important; }
+.link-muted { color: var(--text-muted); text-decoration: underline; }
+.elevated { box-shadow: var(--shadow); }
+
+@media (forced-colors: active) {
+  * { forced-color-adjust: auto; }
+  a, .btn.primary { outline: 2px solid; }
+}
